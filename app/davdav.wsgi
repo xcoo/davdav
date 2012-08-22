@@ -23,9 +23,10 @@ import sys
 
 sys.stdout = sys.stderr
 
-os.environ['DAVDAV_CONFIG'] = '/data/var/davdav/conf/production.ini'
+os.environ['DAVDAV_CONFIG'] = '/home/davdav/davdav/config/davdav.ini'
 
-activate_this = '/data/var/davdav/env/davdav/bin/activate_this.py'
+# Comment out the following two lines if you do not use virtualenv.
+activate_this = os.environ['WORKON_HOME'] + '/davdav/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))
 
 from app import app as application

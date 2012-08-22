@@ -1,7 +1,7 @@
 DEBUG=False
 TESTING=False
 
-DB_URI='mysql://root:password@localhost/davdav?charset=utf8'
+DB_URI='mysql://user:password@localhost/davdav?charset=utf8'
 
 WEBDAV_ROOT_URL='http://webdav.example.com/'
 THUMB_ROOT_URL='http://davdav.example.com/thumbnail'

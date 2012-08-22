@@ -21,9 +21,10 @@
 
 import os
 
-os.environ['DAVDAV_CONFIG'] = '/home/davdav/davdav/production.ini'
+os.environ['DAVDAV_CONFIG'] = '/home/davdav/davdav/config/davdav.ini'
 
-activate_this = '/home/davdav/.virtualenvs/davdav/bin/activate_this.py'
+# Comment out the following two lines if you do not use virtualenv.
+activate_this = os.environ['WORKON_HOME'] + '/davdav/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))
 
 import gen_thumb
