@@ -1,0 +1,12 @@
+DEBUG=False
+TESTING=False
+
+DB_URI='mysql://root:password@localhost/davdav?charset=utf8'
+
+WEBDAV_ROOT_URL='http://webdav.example.com/'
+THUMB_ROOT_URL='http://davdav.example.com/thumbnail'
+
+WEBDAV_DIR='/data/var/webdav'
+THUMB_DIR='/data/var/davdav/thumbnail'
+
+NUM_BY_PAGE=10
