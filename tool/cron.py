@@ -20,12 +20,21 @@
 #
 
 import os
+import ConfigParser
 
-os.environ['DAVDAV_CONFIG'] = '/home/davdav/davdav/config/davdav.ini'
+# Set configuration file's path.
+davdav_conf_file = os.path.join(os.path.dirname(__file__), '../config/davdav.ini')
 
-# Comment out the following two lines if you do not use virtualenv.
-activate_this = os.environ['WORKON_HOME'] + '/davdav/bin/activate_this.py'
-execfile(activate_this, dict(__file__=activate_this))
+# Set virtualenv configuration file's path.
+virtualenv_conf_file = os.path.join(os.path.dirname(__file__), '../config/virtualenv.ini')
+
+os.environ['DAVDAV_CONFIG'] = davdav_conf_file
+
+if os.path.isfile(virtualenv_conf_file):
+    conf = ConfigParser.SafeConfigParser()
+    conf.read(virtualenv_conf_file)
+    activate_this = conf.get('virtualenv', 'VIRTUALENV_ACTIVATE')
+    execfile(activate_this, dict(__file__=activate_this))
 
 import gen_thumb
 gen_thumb.main()

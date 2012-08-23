@@ -1,0 +1,5 @@
+# Set location of the virtualenv activate file.
+# If you do not use virtualenv, set null character.
+
+[virtualenv]
+VIRTUALENV_ACTIVATE='/home/davdav/davdav/.virtualenvs/davdav/bin/activate_this.py'
