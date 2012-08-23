@@ -5,7 +5,6 @@
 # Requirements
 
 * Python 2.7 and higher version
-* virtualenv and virtualenvwrapper (not necessary but recommended)
 * Python libraries
     * Flask
     * SQLAlchemy
@@ -17,11 +16,16 @@
 
 # Install
 
-This installation guide is written for Ubuntu server.
+This installation guide is written for Ubuntu and Apache2 web server.
+You can also use Davdav on other servers.
 
 ## Clone repository
 
     $ git clone https://github.com/xcoo/davdav.git
+
+## Setup MySQL
+
+    $ mysql -u root -p < db/davdav.sql
 
 ## Setup configuration
 
@@ -45,23 +49,30 @@ Change __DB_URI__, __WEBDAV_ROOT__, __THUMB_ROOT_URL__, __WEBDAV_DIR__, and __TH
 
     NUM_BY_PAGE=10
 
-If you do not use virtualenv and virtualenvwrapper, you have to modify __app/davdav.wsgi__ and __tool/cron.py__.
-Comment out the following two lines in the both files.
+If you want to use virtualenv, you have to edit __config/virtualenv.ini__.
+Specify activate python file for your virtualenv.
+Notice that you must not add quotation characters (', ") to the file path.
 
-    #activate_this = os.environ['WORKON_HOME'] + '/davdav/bin/activate_this.py'
-    #execfile(activate_this, dict(__file__=activate_this))
+    $ cp config/virtualenv.ini.example config/virtualenv.ini
+    ----------
+    VIRTUALENV_ACTIVATE=/home/davdav/davdav/.virtualenvs/davdav/bin/activate_this.py
+
+If you do not use virtualenv, delete this file (virtualenv.ini).
+
 
 ## Setup crontab for generating thumbnail images
 
     $ crontab -e
     */5 * * * * python /home/davdav/davdav/tool/cron.py
 
-## Apache2 configuration
+## Setup webserver
+
+### Apache2
 
     <VirtualHost *:80>
         ServerName davdav.example.com
 
-        WSGIScriptAlias /davdav /home/davdav/davdav/app/production.wsgi
+        WSGIScriptAlias /davdav /home/davdav/davdav/app/davdav.wsgi
         WSGIDaemonProcess davdav user=www-data group=www-data processes=5 threads=10 home=/home/davdav/davdav/app python-path=/home/davdav/davdav/app
         WSGIProcessGroup davdav
 
@@ -70,6 +81,10 @@ Comment out the following two lines in the both files.
             Allow from all
         </Directory>
     </VirtualHost>
+
+Restart apache.
+
+    $ sudo service apache2 restart
 
 Access to __http://davdav.example.com__ from Web browser.
 
