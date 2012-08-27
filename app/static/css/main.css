@@ -8,7 +8,8 @@ clear: both;
 
 html{
 height: 100%;
-font-family: 'Kozuka Gothic Pro','小塚ゴシック Pro','Hiragino Kaku Gothic Pro','ヒラギノ角ゴ Pro W3','ＭＳ Ｐゴシック',"Lucida Sans Unicode",Arial,Verdana,sans-serif;
+font-family: Arial, Verdana, sans-serif;
+/*font-family: 'Kozuka Gothic Pro','小塚ゴシック Pro','Hiragino Kaku Gothic Pro','ヒラギノ角ゴ Pro W3','ＭＳ Ｐゴシック',"Lucida Sans Unicode",Arial,Verdana,sans-serif;*/
 }
 
 body{
@@ -37,11 +38,6 @@ height: auto;
 margin: 0 0 20px 0;
 }
 
-#main .date-title{
-	font-weight: bold;
-	padding:20px 0 10px 32px;
-}
-
 #main .date-content{
 min-height: 180px;
 background-color: #eee;
@@ -49,23 +45,39 @@ background-color: #eee;
 border-radius: 18px;
 }
 
+#main .date-title{
+font-weight: bold;
+padding:20px 0 10px 32px;
+}
+
+#main .date-thumbnail{
+padding: 5px 0 10px 32px;
+}
+
 #main .thumbnail-wrapper{
 float: left;
-width: 320px;
+margin-right: 40px;
+width: 192px;
 }
 
-#main .thumbnail-wrapper a{
-	margin: 0 auto;
-	display: block;
-	width: 256px;
-	height: 192px;
+#main .thumbnail-img{
+margin: 0 auto;
+display: block;
+overflow: hidden;
+width: 192px;
+height: 192px;
 }
 
+#main .thumbnail-img a{
+display: block;
+height: 100%;
+width: 100%;
+}
 
 #main .thumbnail-title{
 font-size: 12px;
 color: #777;
-padding:0 0 20px 32px;
+padding: 2px 0 20px 0;
 }
 
 /* detail.html */
@@ -84,61 +96,61 @@ padding: 13px;
 }
 
 #prev{
-	float: left;
-	display: block;
-	width: 0;
-	height: 0;
-	border-right: 20px solid #eee;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
+float: left;
+display: block;
+width: 0;
+height: 0;
+border-right: 20px solid #eee;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
 }
 
 #prev:hover{
-	display: block;
-	width: 0;
-	height: 0;
-	border-right: 20px solid #888;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
+display: block;
+width: 0;
+height: 0;
+border-right: 20px solid #888;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
 }
 
 #next{
-	float: right;
-	display: block;
-	width: 0;
-	height: 0;
-	border-left: 20px solid #eee;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
+float: right;
+display: block;
+width: 0;
+height: 0;
+border-left: 20px solid #eee;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
 }
 
 #next:hover{
-	display: block;
-	width: 0;
-	height: 0;
-	border-left: 20px solid #888;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
+display: block;
+width: 0;
+height: 0;
+border-left: 20px solid #888;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
 }
 
 #back{
-	margin-bottom: 20px;
-	width: 0;
-	height: 0;
-	color: black;
-	display: block;
-	border-right: 20px solid #eee;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
+margin-bottom: 20px;
+width: 0;
+height: 0;
+color: black;
+display: block;
+border-right: 20px solid #eee;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
 }
 
 #back:hover{
-	margin-bottom: 20px;
-	width: 0;
-	height: 0;
-	color: black;
-	display: block;
-	border-right: 20px solid #888;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
+margin-bottom: 20px;
+width: 0;
+height: 0;
+color: black;
+display: block;
+border-right: 20px solid #888;
+border-top: 10px solid transparent;
+border-bottom: 10px solid transparent;
 }

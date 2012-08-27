@@ -56,6 +56,7 @@ Clone davdav repository.
 
 Create MySQL database.
 
+    $ cd /home/davdav/davdav
     $ mysql -u root -p < db/davdav.sql
 
 ## 5. Setup configuration
