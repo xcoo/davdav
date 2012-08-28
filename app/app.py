@@ -94,8 +94,10 @@ def redirect_root():
 
 @app.route('/detail/<path:img_path>')
 def detail(img_path):
+    title = _format_date(img_path.split('/')[1].split('.jpg')[0],
+                         '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
-    return render_template('detail.html', title=img_path, src=img_src, href=img_src)
+    return render_template('detail.html', title=title, src=img_src, href=img_src)
 
 def _get_dav_dates(page=0):
     webdav_dir  = app.config['WEBDAV_DIR']
