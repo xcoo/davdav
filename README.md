@@ -63,7 +63,7 @@ Create MySQL database.
 
 Copy a configuration example.
 
-    $ sudo -H -u davdav cp config/davdav.ini.example config/davdav.ini
+    $ sudo -u davdav cp config/davdav.ini.example config/davdav.ini
     
 Then, edit davdav.ini.
 Change __DB_URI__, __WEBDAV_ROOT__, __THUMB_ROOT_URL__, __WEBDAV_DIR__, and __THUMB_DIR__ according to your environment.
@@ -85,7 +85,7 @@ If you want to use virtualenv, you have to edit __config/virtualenv.ini__.
 Specify activate python file for your virtualenv.
 Notice that you must not add quotation characters (', ") to the file path.
 
-    $ sudo -H -u davdav cp config/virtualenv.ini.example config/virtualenv.ini
+    $ sudo -u davdav cp config/virtualenv.ini.example config/virtualenv.ini
     
     [virtualenv]
     VIRTUALENV_ACTIVATE=/path/to/env/bin/activate_this.py       
