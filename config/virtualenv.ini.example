@@ -1,0 +1,6 @@
+# Set location of the virtualenv activate file.
+# If you do not use virtualenv, delete this file (virtualenv.ini).
+# Must not add quotation characters to the file path.
+
+[virtualenv]
+VIRTUALENV_ACTIVATE=/path/to/env/bin/activate_this.py

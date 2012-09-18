@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Davdav</title>
+
+    <link type="text/css" href="/css/main.css" rel="stylesheet" />
+
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" href="/img/icon.png">
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="main">
+        <div class="autopagerize_page_element">
+          {% for dav_date in dav_dates %}
+          <div class="date">
+            <div class="date-content">
+       	      <div class="date-title">{{ dav_date.title }}</div>
+              <div class="date-thumbnail">
+                {% for dav_img in dav_date.dav_imgs %}
+                <div class="thumbnail-wrapper">
+                  <div class="thumbnail-img" style="background:url({{ dav_img.src }}) no-repeat center;">
+                    <a href="{{ dav_img.href }}"></a>
+                  </div>
+                  <div class="thumbnail-title">{{ dav_img.title }}</div>
+                </div>
+                {% endfor %}
+                <div class="clear"></div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="autopagerize_insert_before"></div>
+
+        {% if prev_page != None %}
+        <a id="prev" href="/?page={{ prev_page }}"></a>
+        {% endif %}
+        
+        {% if next_page != None %}
+        <a id="next" href="/?page={{ next_page }}" rel="next"></a>
+        {% endif %}
+
+        <div class="clear"></div>
+      </div>
+    </div>
+  </body>
+</html>
