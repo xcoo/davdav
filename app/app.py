@@ -20,6 +20,7 @@
 #
 
 import datetime
+import math
 import os
 import re
 import sys
@@ -79,7 +80,7 @@ def root():
         prev_page = page - 1
 
     next_page = None
-    if page < _count_pages() - 1:
+    if page < pages - 1:
         next_page = page + 1
 
     return render_template('main.html', dav_dates=dav_dates,
@@ -170,7 +171,7 @@ def _count_pages():
             continue
         pages += 1
 
-    return round(pages / num_by_page)
+    return math.ceil(float(pages) / num_by_page)
 
 def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
