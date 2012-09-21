@@ -2,6 +2,9 @@
 
 "Davdav" is WebDAV viewer for uploaded pictures by Upupu.
 
+It is very simple, intuitive, and easy to use.
+If you want to know actual images of Davdav, checkout [Davdav wiki pages](https://github.com/xcoo/davdav/wiki).
+
 # Requirements
 
 * Python 2.7 and higher version
