@@ -98,7 +98,14 @@ def detail(img_path):
     title = _format_date(img_path.split('/')[1].split('.jpg')[0],
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
-    return render_template('detail.html', title=title, src=img_src, href=img_src)
+    
+    #prev_next_img is added by maasaamiichii
+    prev_next_img = _get_prev_next_img(img_path)
+    prev_img_src = 'http://davdav.uetamasamichi.com%s' % (prev_next_img['prev_img'])
+    next_img_src = 'http://davdav.uetamasamichi.com%s' % (prev_next_img['next_img'])
+    return render_template('detail.html', title=title, src=img_src, href=img_src, prev_src=prev_img_src, next_src=next_img_src)
+    #Until here
+
 
 def _get_dav_dates(page=0):
     webdav_dir  = app.config['WEBDAV_DIR']
@@ -139,6 +146,13 @@ def _get_dav_dates(page=0):
                     continue
                     
                 orig_path = os.path.join(d, f)
+                
+                #This if context is added by maasaamiichii
+                enabled = thumbnail_dao.check_enable(orig_path)
+                if enabled == 0:
+                    continue
+                #Until here
+                
                 thumb_path = thumbnail_dao.select_thumbnail(orig_path)
 
                 try:
@@ -152,8 +166,9 @@ def _get_dav_dates(page=0):
                     src = '/img/nothumbnail.jpg'
 
                 href = '/detail/' + d + '/' + f
-
-                dav_img = { 'title': title, 'src': src, 'href': href }
+                
+                                                                       #thumb_path was added by maasaamiichii
+                dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
                 dav_imgs.append(dav_img)
 
         dav_date = { 'title': group_title, 'dav_imgs': dav_imgs }
@@ -176,6 +191,64 @@ def _count_pages():
 def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
     return dt.strftime(dst_format)
+    
+    
+#Added by maasaamiichii
+def _get_prev_next_img(img_path):
+    webdav_dir  = app.config['WEBDAV_DIR']
+    num_by_page = app.config['NUM_BY_PAGE']
+
+    dirs = os.listdir(webdav_dir)
+    dirs.sort() 
+    dirs.reverse()
+    
+    next_find_flag=0
+    prev_find_flag=0
+    tmp_ref=''
+    tmp_path=''
+    prev_img=''
+    next_img=''
+    for d in dirs:
+
+        if not os.path.isdir(os.path.join(webdav_dir, d)):
+            continue
+        
+        if prev_find_flag==1:
+            break
+
+        for dt_root, dt_dirs, dt_files in os.walk(os.path.join(webdav_dir, d)):
+        
+            if prev_find_flag==1:
+                break
+
+            for f in dt_files:
+
+                base, ext = os.path.splitext(f)
+                if not re.match('^\.(jpe?g|png|gif|bmp)', ext, re.IGNORECASE):
+                    continue
+                    
+                orig_path = os.path.join(d, f)
+                enabled = thumbnail_dao.check_enable(orig_path)
+                if enabled == 0:
+                    continue
+                
+                if next_find_flag==1:
+                    next_img = '/detail/' + d + '/' + f
+                    prev_find_flag=1
+                    break 
+                
+                if img_path==orig_path:
+                    prev_img = tmp_ref
+                    next_find_flag=1
+              
+                if next_find_flag==0:
+                    tmp_ref = '/detail/' + d + '/' + f
+                    tmp_path = orig_path
+    
+    prev_next_imgs={'prev_img':prev_img, 'next_img':next_img}
+
+    return prev_next_imgs
+#Until here
 
 if __name__ == '__main__':
     app.run()

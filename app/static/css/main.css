@@ -18,6 +18,10 @@ height: 100%;
 min-width: 1024px;
 background-color: #ccc;
 text-align: center;
+
+/*Forbid touch callout, added by maasaamiichii*/
+-webkit-touch-callout:none;
+/*Until Here*/
 }
 
 #wrapper{
@@ -79,6 +83,47 @@ font-size: 12px;
 color: #777;
 padding: 2px 0 20px 0;
 }
+
+/*Added by maasaamiichii*/
+#main .disable-button{
+position: relative;
+left: 130px;
+top:4px;
+display: inline-block;
+}
+
+#main .changeCursor{
+cursor: pointer;
+}
+
+button{
+border:none;
+background-color:#eee;
+}
+
+footer{
+	color: black;
+	margin:0 auto 20px;
+	padding:15px 0;
+	position:relative;
+	text-align:center;
+	width:902px;
+}
+footer p{
+	font-size: 12px !important;
+}
+footer a{
+	color: black;
+	text-decoration: underline;
+	-moz-transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+	padding: 1px;
+}
+/*Until here */
+
+
 
 /* detail.html */
 

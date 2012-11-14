@@ -68,3 +68,15 @@ class ThumbnailDao():
             return None
         finally:
             session.close()
+            
+    #This function was added by maasaamiichii
+    def check_enable(self,file_path):
+        session = scoped_session(sessionmaker(bind=self._engine))
+        query = session.query(Thumbnail).filter(Thumbnail.original==file_path)
+        try:
+            thumbnail = query.one()
+            return thumbnail.enable
+        except NoResultFound:
+            return None
+        finally:
+            session.close()
