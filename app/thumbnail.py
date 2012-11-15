@@ -80,3 +80,12 @@ class ThumbnailDao():
             return None
         finally:
             session.close()
+            
+    #This function was added by maasaamiichii
+    def disable_thumbnail(self,file_path):
+        session = scoped_session(sessionmaker(bind=self._engine))
+        query = session.query(Thumbnail).filter(Thumbnail.thumbnail==file_path)
+        thumbnail = query.one()
+        thumbnail.enable=0
+        session.commit()
+        session.close()

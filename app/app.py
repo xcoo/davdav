@@ -29,6 +29,7 @@ from flask import Flask
 from flask import render_template, redirect, request, abort
 from werkzeug import SharedDataMiddleware
 from sqlalchemy import create_engine
+from decorator import requires_auth
 
 from thumbnail import ThumbnailDao
 
@@ -45,7 +46,7 @@ except RuntimeError:
     app.config['WEBDAV_DIR']      = os.path.join(os.path.dirname(__file__), 'static/test/main')
     app.config['THUMB_DIR']       = os.path.join(os.path.dirname(__file__),'static/test/thumbnail')
     app.config['NUM_BY_PAGE']     = 2
-
+    
 app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
         '/': os.path.join(os.path.dirname(__file__), 'static')
         })
@@ -56,6 +57,7 @@ engine = create_engine(app.config['DB_URI'],
                        pool_recycle=3600)
 
 thumbnail_dao = ThumbnailDao(engine)
+
 
 @app.route('/')
 def root():
@@ -99,12 +101,20 @@ def detail(img_path):
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
     
-    #prev_next_img is added by maasaamiichii
+    #prev_next_img is added by Masamichi Ueta
     prev_next_img = _get_prev_next_img(img_path)
     prev_img_src = 'http://davdav.uetamasamichi.com%s' % (prev_next_img['prev_img'])
     next_img_src = 'http://davdav.uetamasamichi.com%s' % (prev_next_img['next_img'])
     return render_template('detail.html', title=title, src=img_src, href=img_src, prev_src=prev_img_src, next_src=next_img_src)
     #Until here
+    
+#Disable is added by maasaamiichii
+@app.route('/disable',methods=['POST'])
+@requires_auth
+def disable():
+    file_path=request.form['file_path']
+    thumbnail_dao.disable_thumbnail(file_path)
+    return redirect('/')
 
 
 def _get_dav_dates(page=0):
@@ -147,11 +157,11 @@ def _get_dav_dates(page=0):
                     
                 orig_path = os.path.join(d, f)
                 
-                #This if context is added by maasaamiichii
+                #This if context is added by Masamichi Ueta
                 enabled = thumbnail_dao.check_enable(orig_path)
                 if enabled == 0:
                     continue
-                #Until here
+                #To here
                 
                 thumb_path = thumbnail_dao.select_thumbnail(orig_path)
 
@@ -167,7 +177,7 @@ def _get_dav_dates(page=0):
 
                 href = '/detail/' + d + '/' + f
                 
-                                                                       #thumb_path was added by maasaamiichii
+                                                                       #thumb_path was added by Masamichi Ueta
                 dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
                 dav_imgs.append(dav_img)
 
@@ -193,7 +203,7 @@ def _format_date(dt_str, src_format, dst_format):
     return dt.strftime(dst_format)
     
     
-#Added by maasaamiichii
+#Added by Masamichi Ueta
 def _get_prev_next_img(img_path):
     webdav_dir  = app.config['WEBDAV_DIR']
     num_by_page = app.config['NUM_BY_PAGE']
