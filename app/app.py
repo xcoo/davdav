@@ -101,11 +101,11 @@ def detail(img_path):
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
     
-    #prev_next_img is added by Masamichi Ueta
+    #prev_next_img is added by maasaamiichii
     prev_next_img = _get_prev_next_img(img_path)
-    prev_img_src = 'http://davdav.uetamasamichi.com%s' % (prev_next_img['prev_img'])
-    next_img_src = 'http://davdav.uetamasamichi.com%s' % (prev_next_img['next_img'])
-    return render_template('detail.html', title=title, src=img_src, href=img_src, prev_src=prev_img_src, next_src=next_img_src)
+    prev_img_ref = prev_next_img['prev_img']
+    next_img_ref = prev_next_img['next_img']
+    return render_template('detail.html', title=title, src=img_src, href=img_src, prev_ref=prev_img_ref, next_ref=next_img_ref)
     #Until here
     
 #Disable is added by maasaamiichii
@@ -157,11 +157,11 @@ def _get_dav_dates(page=0):
                     
                 orig_path = os.path.join(d, f)
                 
-                #This if context is added by Masamichi Ueta
+                #This if context is added by maasaamiichii
                 enabled = thumbnail_dao.check_enable(orig_path)
                 if enabled == 0:
                     continue
-                #To here
+                #Until here
                 
                 thumb_path = thumbnail_dao.select_thumbnail(orig_path)
 
@@ -177,7 +177,7 @@ def _get_dav_dates(page=0):
 
                 href = '/detail/' + d + '/' + f
                 
-                                                                       #thumb_path was added by Masamichi Ueta
+                                                                       #thumb_path was added by maasaamiichii
                 dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
                 dav_imgs.append(dav_img)
 
@@ -203,7 +203,7 @@ def _format_date(dt_str, src_format, dst_format):
     return dt.strftime(dst_format)
     
     
-#Added by Masamichi Ueta
+#Added by maasaamiichii
 def _get_prev_next_img(img_path):
     webdav_dir  = app.config['WEBDAV_DIR']
     num_by_page = app.config['NUM_BY_PAGE']
