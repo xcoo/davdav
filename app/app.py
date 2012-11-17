@@ -61,7 +61,6 @@ thumbnail_dao = ThumbnailDao(engine)
 
 @app.route('/')
 def root():
-
     try:
         arg = request.args.get('page', '')
         if arg is not '':
@@ -101,12 +100,15 @@ def detail(img_path):
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
     
-    #prev_next_img is added by maasaamiichii
     prev_next_img = _get_prev_next_img(img_path)
     prev_img_ref = prev_next_img['prev_img']
     next_img_ref = prev_next_img['next_img']
-    return render_template('detail.html', title=title, src=img_src, href=img_src, prev_ref=prev_img_ref, next_ref=next_img_ref)
-    #Until here
+
+    return render_template('detail.html', title=title,
+                                          src=img_src,
+                                          href=img_src,
+                                          prev_ref=prev_img_ref,
+                                          next_ref=next_img_ref)
     
 #Disable is added by maasaamiichii
 @app.route('/disable',methods=['POST'])
@@ -115,7 +117,6 @@ def disable():
     file_path=request.form['file_path']
     thumbnail_dao.disable_thumbnail(file_path)
     return redirect('/')
-
 
 def _get_dav_dates(page=0):
     webdav_dir  = app.config['WEBDAV_DIR']
@@ -156,14 +157,13 @@ def _get_dav_dates(page=0):
                     continue
                     
                 orig_path = os.path.join(d, f)
+
+                thumbnail = thumbnail_dao.select_by_filepath(orig_path)
                 
-                #This if context is added by maasaamiichii
-                enabled = thumbnail_dao.check_enable(orig_path)
-                if enabled == 0:
+                if thumbnail is None or thumbnail.enable == 0:
                     continue
-                #Until here
                 
-                thumb_path = thumbnail_dao.select_thumbnail(orig_path)
+                thumb_path = thumbnail.thumbnail
 
                 try:
                     title = _format_date(base, '%Y%m%d_%H%M%S', '%H:%M')
@@ -177,7 +177,6 @@ def _get_dav_dates(page=0):
 
                 href = '/detail/' + d + '/' + f
                 
-                                                                       #thumb_path was added by maasaamiichii
                 dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
                 dav_imgs.append(dav_img)
 
@@ -201,9 +200,8 @@ def _count_pages():
 def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
     return dt.strftime(dst_format)
-    
-    
-#Added by maasaamiichii
+        
+# Added by maasaamiichii
 def _get_prev_next_img(img_path):
     webdav_dir  = app.config['WEBDAV_DIR']
     num_by_page = app.config['NUM_BY_PAGE']
@@ -238,8 +236,8 @@ def _get_prev_next_img(img_path):
                     continue
                     
                 orig_path = os.path.join(d, f)
-                enabled = thumbnail_dao.check_enable(orig_path)
-                if enabled == 0:
+                thumbnail = thumbnail_dao.select_by_filepath(orig_path)
+                if thumbnail is None or thumbnail.enable == 0:
                     continue
                 
                 if next_find_flag==1:
@@ -258,7 +256,6 @@ def _get_prev_next_img(img_path):
     prev_next_imgs={'prev_img':prev_img, 'next_img':next_img}
 
     return prev_next_imgs
-#Until here
 
 if __name__ == '__main__':
     app.run()

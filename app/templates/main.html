@@ -11,17 +11,20 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon-precomposed" href="/img/icon.png">
     
-    <!--Disable right-click, added by maasaamiichii-->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script>
-        $(document).ready(function(){
-            $(document).bind("contextmenu",function(e){
-                return false;
-            });
-        });
+      <!--
+      $(document).ready(function() {
+          $(document).bind("contextmenu",function(e) {
+              return false;
+          });
+      });
+      -->
     </script>
-    <!--Until Here-->
-    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
     <div id="wrapper">
@@ -40,19 +43,16 @@
                   <div class="thumbnail-title">
                      {{ dav_img.title }}
                      
-                     <!--Form tag is added by maasaamiichii-->
                      <div class="disable-button">
-                     <form action="/disable" method="POST">
-                     <input type="hidden" name="file_path" value="{{ dav_img.thumb_path }}"/>
-                     <button type="submit">
-	                     <span class="changeCursor">
-		                     <img src="/img/trash.png" onmouseover="this.src = '/img/trash.png';" onmouseout="this.src = '/img/trash.png';">
-		                 </span>
-		             </button>
-                     </form>
+                       <form action="/disable" method="POST">
+                         <input type="hidden" name="file_path" value="{{ dav_img.thumb_path }}"/>
+                         <button type="submit">
+	                         <span class="changeCursor">
+		                         <img src="/img/trash.png" onmouseover="this.src = '/img/trash.png';" onmouseout="this.src = '/img/trash.png';">
+		                       </span>
+		                     </button>
+                       </form>
                      </div>
-                     <!--Until Here -->
-                     
                   </div>
                 </div>
                 {% endfor %}
@@ -76,13 +76,11 @@
         <div class="clear"></div>
       </div>
       
-      <!--Copyright is added by maasaamiichii-->
       <footer>
-          <p> Copyright &copy;Username All Rights Reserved. &nbsp;|&nbsp; Powered by <a href="https://github.com/xcoo/davdav" target = "_blank">Davdav. Xcoo, Inc.</a>
-          </p>
+        <p>
+          Powered by <a href="https://github.com/xcoo/davdav" target = "_blank">Davdav</a>. <a href="http://www.xcoo.jp/" target = "_blank">Xcoo, Inc.</a>
+        </p>
       </footer>
-      <!--Until Here-->
-    
     </div>
   </body>
 </html>
