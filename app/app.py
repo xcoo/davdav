@@ -24,12 +24,12 @@ import math
 import os
 import re
 import sys
+from functools import wraps
 
-from flask import Flask
+from flask import Flask, Response
 from flask import render_template, redirect, request, abort
 from werkzeug import SharedDataMiddleware
 from sqlalchemy import create_engine
-from decorator import requires_auth
 
 from thumbnail import ThumbnailDao
 
@@ -46,6 +46,10 @@ except RuntimeError:
     app.config['WEBDAV_DIR']      = os.path.join(os.path.dirname(__file__), 'static/test/main')
     app.config['THUMB_DIR']       = os.path.join(os.path.dirname(__file__),'static/test/thumbnail')
     app.config['NUM_BY_PAGE']     = 2
+    app.config['FOOTER_ENABLE']   = True
+    app.config['AUTH_ENABLE']     = True
+    app.config['AUTH_USERNAME']   = 'username'
+    app.config['AUTH_PASSWORD']   = 'password'
     
 app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
         '/': os.path.join(os.path.dirname(__file__), 'static')
@@ -58,6 +62,29 @@ engine = create_engine(app.config['DB_URI'],
 
 thumbnail_dao = ThumbnailDao(engine)
 
+
+# Authorization -----
+
+def _check_auth(username, password):
+    return username == app.config['AUTH_USER'] and password == app.config['AUTH_PASSWORD']
+
+def _authenticate():
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if app.config['AUTH_ENABLE'] and (not auth or not _check_auth(auth.username, auth.password)):
+            return _authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
+# Requests -----
 
 @app.route('/')
 def root():
@@ -86,7 +113,8 @@ def root():
 
     return render_template('main.html', dav_dates=dav_dates,
                                         prev_page=prev_page,
-                                        next_page=next_page)
+                                        next_page=next_page,
+                                        footer_enable=app.config['FOOTER_ENABLE'])
 
 @app.route('/top')
 @app.route('/home')
@@ -108,15 +136,18 @@ def detail(img_path):
                                           src=img_src,
                                           href=img_src,
                                           prev_ref=prev_img_ref,
-                                          next_ref=next_img_ref)
+                                          next_ref=next_img_ref,
+                                          footer_enable=app.config['FOOTER_ENABLE'])
     
-#Disable is added by maasaamiichii
 @app.route('/disable',methods=['POST'])
 @requires_auth
 def disable():
     file_path=request.form['file_path']
-    thumbnail_dao.disable_thumbnail(file_path)
+#    thumbnail_dao.disable_thumbnail(file_path)
     return redirect('/')
+
+
+# Other functions
 
 def _get_dav_dates(page=0):
     webdav_dir  = app.config['WEBDAV_DIR']

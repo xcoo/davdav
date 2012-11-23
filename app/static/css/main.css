@@ -97,40 +97,17 @@ button {
   background-color:#eee;
 }
 
-footer {
-  color: #777;
-  margin:0 auto 20px;
-  padding:15px 0;
-  position:relative;
-  text-align:center;
-  font-size: 12px;
-}
-
-footer a {
-  color: #777;
-  text-decoration: underline;
-  -moz-transition: all 0.2s ease-in-out;
-  -webkit-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  padding: 1px;
-}
-
-footer a:hover {
-  color: #222;
-}
-
 /* detail.html */
 
 .detail-content {
   background-color: #eee;
+  padding: 20px 20px 17px;
   text-align: center;
   border-radius: 18px;
 }
 
 .detail-img {
-  width: 97%;
-  padding: 13px;
+  width: 100%;
 }
 
 #prev {
@@ -193,6 +170,31 @@ footer a:hover {
   border-bottom: 10px solid transparent;
 }
 
+/* footer */
+
+footer {
+  color: #777;
+  margin:0 auto 20px;
+  padding:15px 0;
+  position:relative;
+  text-align:center;
+  font-size: 12px;
+}
+
+footer a {
+  color: #777;
+  text-decoration: underline;
+  -moz-transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  padding: 1px;
+}
+
+footer a:hover {
+  color: #222;
+}
+
 /* reponsive */
 
 @media screen and (max-width: 767px), only screen and (max-device-width: 480px), only screen and (min-device-width: 640px) and (max-device-width: 1136px) and (-webkit-min-device-pixel-ratio: 2) {
@@ -209,6 +211,10 @@ body {
 #main .date-content {
   padding-left: 20px;
   padding-bottom: 3px;
+}
+
+.detail-img {
+  pointer-events: none;
 }
 
 footer {
