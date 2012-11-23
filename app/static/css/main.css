@@ -83,13 +83,19 @@ body {
 
 #main .disable-button {
   position: relative;
-  left: 130px;
-  top:4px;
+  left: 143px;
   display: inline-block;
 }
 
-#main .changeCursor {
+#disable-submit-button {
+  border: 0;
+  opacity: 0.4;
+  background: url(/img/trash.png) left top no-repeat;
   cursor: pointer;
+}
+
+#disable-submit-button:hover {
+  opacity: 1.0;
 }
 
 button {

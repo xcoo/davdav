@@ -36,12 +36,8 @@
                      
                      <div class="disable-button">
                        <form action="/disable" method="POST">
-                         <input type="hidden" name="file_path" value="{{ dav_img.thumb_path }}"/>
-                         <button type="submit">
-	                         <span class="changeCursor">
-		                         <img src="/img/trash.png" onmouseover="this.src = '/img/trash.png';" onmouseout="this.src = '/img/trash.png';">
-		                       </span>
-		                     </button>
+                         <input type="hidden" name="file_path" value="{{ dav_img.thumb_path }}" />
+                         <input type="submit" id="disable-submit-button" value="" />
                        </form>
                      </div>
                   </div>
