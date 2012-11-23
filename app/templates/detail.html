@@ -10,15 +10,31 @@
 
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon-precomposed" href="/img/icon.png">
+    
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->   
   </head>
   <body>
     <div id="wrapper">
       <div id="main">
         <a id="back" href="/"></a>
+
         <div class="detail-content">
           <a href="{{ href }}" target="_blank"><img src="{{ src }}" class="detail-img"></a>
         </div>
+        
+        <div>
+          <br>
+          <a id="prev" href="{{ prev_ref }}"></a><a id="next" href="{{ next_ref }}"></a>
+        </div>        
       </div>
+
+      {% if footer_enable %}
+        {% include 'footer.html' %}
+      {% endif %}
     </div>
   </body>
 </html>

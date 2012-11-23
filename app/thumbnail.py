@@ -58,13 +58,22 @@ class ThumbnailDao():
     def __init__(self, engine):
         self._engine = engine
 
-    def select_thumbnail(self, file_path):
+    def select_by_filepath(self, filepath):
         session = scoped_session(sessionmaker(bind=self._engine))
-        query = session.query(Thumbnail).filter(Thumbnail.original==file_path)
+        query = session.query(Thumbnail).filter(Thumbnail.original==filepath)
         try:
             thumbnail = query.one()
-            return thumbnail.thumbnail
+            return thumbnail
         except NoResultFound:
             return None
         finally:
             session.close()
+            
+    # Added by maasaamiichii
+    def disable_thumbnail(self, file_path):
+        session = scoped_session(sessionmaker(bind=self._engine))
+        query = session.query(Thumbnail).filter(Thumbnail.thumbnail==file_path)
+        thumbnail = query.one()
+        thumbnail.enable = 0
+        session.commit()
+        session.close()

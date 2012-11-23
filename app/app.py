@@ -24,8 +24,9 @@ import math
 import os
 import re
 import sys
+from functools import wraps
 
-from flask import Flask
+from flask import Flask, Response
 from flask import render_template, redirect, request, abort
 from werkzeug import SharedDataMiddleware
 from sqlalchemy import create_engine
@@ -45,7 +46,11 @@ except RuntimeError:
     app.config['WEBDAV_DIR']      = os.path.join(os.path.dirname(__file__), 'static/test/main')
     app.config['THUMB_DIR']       = os.path.join(os.path.dirname(__file__),'static/test/thumbnail')
     app.config['NUM_BY_PAGE']     = 2
-
+    app.config['FOOTER_ENABLE']   = True
+    app.config['AUTH_ENABLE']     = True
+    app.config['AUTH_USERNAME']   = 'username'
+    app.config['AUTH_PASSWORD']   = 'password'
+    
 app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
         '/': os.path.join(os.path.dirname(__file__), 'static')
         })
@@ -57,9 +62,33 @@ engine = create_engine(app.config['DB_URI'],
 
 thumbnail_dao = ThumbnailDao(engine)
 
+
+# Authorization -----
+
+def check_auth(username, password):
+    return username == app.config['AUTH_USERNAME'] and password == app.config['AUTH_PASSWORD']
+
+def authenticate():
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if app.config['AUTH_ENABLE']:
+            if not auth or not check_auth(auth.username, auth.password):
+                return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
+# Requests -----
+
 @app.route('/')
 def root():
-
     try:
         arg = request.args.get('page', '')
         if arg is not '':
@@ -85,7 +114,8 @@ def root():
 
     return render_template('main.html', dav_dates=dav_dates,
                                         prev_page=prev_page,
-                                        next_page=next_page)
+                                        next_page=next_page,
+                                        footer_enable=app.config['FOOTER_ENABLE'])
 
 @app.route('/top')
 @app.route('/home')
@@ -98,7 +128,27 @@ def detail(img_path):
     title = _format_date(img_path.split('/')[1].split('.jpg')[0],
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
-    return render_template('detail.html', title=title, src=img_src, href=img_src)
+    
+    prev_next_img = _get_prev_next_img(img_path)
+    prev_img_ref = prev_next_img['prev_img']
+    next_img_ref = prev_next_img['next_img']
+
+    return render_template('detail.html', title=title,
+                                          src=img_src,
+                                          href=img_src,
+                                          prev_ref=prev_img_ref,
+                                          next_ref=next_img_ref,
+                                          footer_enable=app.config['FOOTER_ENABLE'])
+    
+@app.route('/disable',methods=['POST'])
+@requires_auth
+def disable():
+    file_path=request.form['file_path']
+    thumbnail_dao.disable_thumbnail(file_path)
+    return redirect('/')
+
+
+# Other functions
 
 def _get_dav_dates(page=0):
     webdav_dir  = app.config['WEBDAV_DIR']
@@ -139,7 +189,13 @@ def _get_dav_dates(page=0):
                     continue
                     
                 orig_path = os.path.join(d, f)
-                thumb_path = thumbnail_dao.select_thumbnail(orig_path)
+
+                thumbnail = thumbnail_dao.select_by_filepath(orig_path)
+                
+                if thumbnail is None or thumbnail.enable == 0:
+                    continue
+                
+                thumb_path = thumbnail.thumbnail
 
                 try:
                     title = _format_date(base, '%Y%m%d_%H%M%S', '%H:%M')
@@ -152,8 +208,8 @@ def _get_dav_dates(page=0):
                     src = '/img/nothumbnail.jpg'
 
                 href = '/detail/' + d + '/' + f
-
-                dav_img = { 'title': title, 'src': src, 'href': href }
+                
+                dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
                 dav_imgs.append(dav_img)
 
         dav_date = { 'title': group_title, 'dav_imgs': dav_imgs }
@@ -176,6 +232,62 @@ def _count_pages():
 def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
     return dt.strftime(dst_format)
+        
+# Added by maasaamiichii
+def _get_prev_next_img(img_path):
+    webdav_dir  = app.config['WEBDAV_DIR']
+    num_by_page = app.config['NUM_BY_PAGE']
+
+    dirs = os.listdir(webdav_dir)
+    dirs.sort() 
+    dirs.reverse()
+    
+    next_find_flag=0
+    prev_find_flag=0
+    tmp_ref=''
+    tmp_path=''
+    prev_img=''
+    next_img=''
+    for d in dirs:
+
+        if not os.path.isdir(os.path.join(webdav_dir, d)):
+            continue
+        
+        if prev_find_flag==1:
+            break
+
+        for dt_root, dt_dirs, dt_files in os.walk(os.path.join(webdav_dir, d)):
+        
+            if prev_find_flag==1:
+                break
+
+            for f in dt_files:
+
+                base, ext = os.path.splitext(f)
+                if not re.match('^\.(jpe?g|png|gif|bmp)', ext, re.IGNORECASE):
+                    continue
+                    
+                orig_path = os.path.join(d, f)
+                thumbnail = thumbnail_dao.select_by_filepath(orig_path)
+                if thumbnail is None or thumbnail.enable == 0:
+                    continue
+                
+                if next_find_flag==1:
+                    next_img = '/detail/' + d + '/' + f
+                    prev_find_flag=1
+                    break 
+                
+                if img_path==orig_path:
+                    prev_img = tmp_ref
+                    next_find_flag=1
+              
+                if next_find_flag==0:
+                    tmp_ref = '/detail/' + d + '/' + f
+                    tmp_path = orig_path
+    
+    prev_next_imgs={'prev_img':prev_img, 'next_img':next_img}
+
+    return prev_next_imgs
 
 if __name__ == '__main__':
     app.run()
