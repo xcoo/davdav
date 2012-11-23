@@ -65,10 +65,10 @@ thumbnail_dao = ThumbnailDao(engine)
 
 # Authorization -----
 
-def _check_auth(username, password):
-    return username == app.config['AUTH_USER'] and password == app.config['AUTH_PASSWORD']
+def check_auth(username, password):
+    return username == app.config['AUTH_USERNAME'] and password == app.config['AUTH_PASSWORD']
 
-def _authenticate():
+def authenticate():
     return Response(
     'Could not verify your access level for that URL.\n'
     'You have to login with proper credentials', 401,
@@ -78,8 +78,9 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if app.config['AUTH_ENABLE'] and (not auth or not _check_auth(auth.username, auth.password)):
-            return _authenticate()
+        if app.config['AUTH_ENABLE']:
+            if not auth or not check_auth(auth.username, auth.password):
+                return authenticate()
         return f(*args, **kwargs)
     return decorated
 
@@ -143,7 +144,7 @@ def detail(img_path):
 @requires_auth
 def disable():
     file_path=request.form['file_path']
-#    thumbnail_dao.disable_thumbnail(file_path)
+    thumbnail_dao.disable_thumbnail(file_path)
     return redirect('/')
 
 

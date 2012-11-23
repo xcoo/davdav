@@ -82,12 +82,13 @@ body {
 }
 
 #main .disable-button {
-  position: relative;
-  left: 143px;
+  float: right;
   display: inline-block;
 }
 
 #disable-submit-button {
+  width: 20px;
+  height: 20px;
   border: 0;
   opacity: 0.4;
   background: url(/img/trash.png) left top no-repeat;
