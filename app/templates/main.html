@@ -20,6 +20,31 @@
             });
         });
     </script>
+    <!-- Select the prev and next pictures by left or right button  -->
+    <script>
+         $(window).keydown(function(e){
+             if (e.keyCode == 39)
+                 return false;
+         });
+         
+        $(window).keyup(function(e){
+            var KeyID = e.keyCode;
+            switch(KeyID){
+                case 37:{
+                    {% if prev_page != None %}
+                        window.location.href = "/?page={{ prev_page }}";
+                    {% endif %}
+                    break;
+                    }
+                case 39:{
+                    {% if next_page != None %}
+                        window.location.href = "/?page={{ next_page }}";
+                    {% endif %}
+                    break;
+                    }
+             }
+         });
+    </script>​
     <!--Until Here-->
     
   </head>

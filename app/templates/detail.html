@@ -20,6 +20,25 @@
             });
         });
     </script>
+     <!-- Select the prev and next pictures by left or right button  -->
+    <script>
+         $(window).keydown(function(e){
+             if (e.keyCode == 39)
+                 return false;
+         });
+         
+        $(window).keyup(function(e){
+            var KeyID = e.keyCode;
+            switch(KeyID){
+                case 37:
+                    window.location.href = "{{ prev_ref }}";
+                    break;
+                case 39:
+                    window.location.href = "{{ next_ref }}";
+                    break;
+             }
+         });
+    </script>​
     <!--Until Here-->
     
   </head>
