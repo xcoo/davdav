@@ -24,12 +24,12 @@ import math
 import os
 import re
 import sys
+from functools import wraps
 
-from flask import Flask
+from flask import Flask, Response
 from flask import render_template, redirect, request, abort
 from werkzeug import SharedDataMiddleware
 from sqlalchemy import create_engine
-from decorator import requires_auth
 
 from thumbnail import ThumbnailDao
 
@@ -46,6 +46,10 @@ except RuntimeError:
     app.config['WEBDAV_DIR']      = os.path.join(os.path.dirname(__file__), 'static/test/main')
     app.config['THUMB_DIR']       = os.path.join(os.path.dirname(__file__),'static/test/thumbnail')
     app.config['NUM_BY_PAGE']     = 2
+    app.config['FOOTER_ENABLE']   = True
+    app.config['AUTH_ENABLE']     = True
+    app.config['AUTH_USERNAME']   = 'username'
+    app.config['AUTH_PASSWORD']   = 'password'
     
 app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
         '/': os.path.join(os.path.dirname(__file__), 'static')
@@ -59,9 +63,32 @@ engine = create_engine(app.config['DB_URI'],
 thumbnail_dao = ThumbnailDao(engine)
 
 
+# Authorization -----
+
+def check_auth(username, password):
+    return username == app.config['AUTH_USERNAME'] and password == app.config['AUTH_PASSWORD']
+
+def authenticate():
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if app.config['AUTH_ENABLE']:
+            if not auth or not check_auth(auth.username, auth.password):
+                return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
+# Requests -----
+
 @app.route('/')
 def root():
-
     try:
         arg = request.args.get('page', '')
         if arg is not '':
@@ -87,7 +114,8 @@ def root():
 
     return render_template('main.html', dav_dates=dav_dates,
                                         prev_page=prev_page,
-                                        next_page=next_page)
+                                        next_page=next_page,
+                                        footer_enable=app.config['FOOTER_ENABLE'])
 
 @app.route('/top')
 @app.route('/home')
@@ -101,14 +129,17 @@ def detail(img_path):
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
     
-    #prev_next_img is added by maasaamiichii
     prev_next_img = _get_prev_next_img(img_path)
     prev_img_ref = prev_next_img['prev_img']
     next_img_ref = prev_next_img['next_img']
-    return render_template('detail.html', title=title, src=img_src, href=img_src, prev_ref=prev_img_ref, next_ref=next_img_ref)
-    #Until here
+
+    return render_template('detail.html', title=title,
+                                          src=img_src,
+                                          href=img_src,
+                                          prev_ref=prev_img_ref,
+                                          next_ref=next_img_ref,
+                                          footer_enable=app.config['FOOTER_ENABLE'])
     
-#Disable is added by maasaamiichii
 @app.route('/disable',methods=['POST'])
 @requires_auth
 def disable():
@@ -116,6 +147,8 @@ def disable():
     thumbnail_dao.disable_thumbnail(file_path)
     return redirect('/')
 
+
+# Other functions
 
 def _get_dav_dates(page=0):
     webdav_dir  = app.config['WEBDAV_DIR']
@@ -156,14 +189,13 @@ def _get_dav_dates(page=0):
                     continue
                     
                 orig_path = os.path.join(d, f)
+
+                thumbnail = thumbnail_dao.select_by_filepath(orig_path)
                 
-                #This if context is added by maasaamiichii
-                enabled = thumbnail_dao.check_enable(orig_path)
-                if enabled == 0:
+                if thumbnail is None or thumbnail.enable == 0:
                     continue
-                #Until here
                 
-                thumb_path = thumbnail_dao.select_thumbnail(orig_path)
+                thumb_path = thumbnail.thumbnail
 
                 try:
                     title = _format_date(base, '%Y%m%d_%H%M%S', '%H:%M')
@@ -177,7 +209,6 @@ def _get_dav_dates(page=0):
 
                 href = '/detail/' + d + '/' + f
                 
-                                                                       #thumb_path was added by maasaamiichii
                 dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
                 dav_imgs.append(dav_img)
 
@@ -201,9 +232,8 @@ def _count_pages():
 def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
     return dt.strftime(dst_format)
-    
-    
-#Added by maasaamiichii
+        
+# Added by maasaamiichii
 def _get_prev_next_img(img_path):
     webdav_dir  = app.config['WEBDAV_DIR']
     num_by_page = app.config['NUM_BY_PAGE']
@@ -238,8 +268,8 @@ def _get_prev_next_img(img_path):
                     continue
                     
                 orig_path = os.path.join(d, f)
-                enabled = thumbnail_dao.check_enable(orig_path)
-                if enabled == 0:
+                thumbnail = thumbnail_dao.select_by_filepath(orig_path)
+                if thumbnail is None or thumbnail.enable == 0:
                     continue
                 
                 if next_find_flag==1:
@@ -258,7 +288,6 @@ def _get_prev_next_img(img_path):
     prev_next_imgs={'prev_img':prev_img, 'next_img':next_img}
 
     return prev_next_imgs
-#Until here
 
 if __name__ == '__main__':
     app.run()

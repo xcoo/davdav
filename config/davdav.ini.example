@@ -10,3 +10,9 @@ WEBDAV_DIR='/var/www/webdav'
 THUMB_DIR='/home/davdav/thumbnail'
 
 NUM_BY_PAGE=10
+
+FOOTER_ENABLE=True
+
+AUTH_ENABLE=False
+AUTH_USERNAME='username'
+AUTH_PASSWORD='password'

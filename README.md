@@ -112,6 +112,7 @@ Setup WSGI in apache2 configuration like the following:
         WSGIScriptAlias / /home/davdav/davdav/app/davdav.wsgi
         WSGIDaemonProcess davdav user=www-data group=www-data processes=5 threads=10 home=/home/davdav/davdav/app python-path=/home/davdav/davdav/app
         WSGIProcessGroup davdav
+        WSGIPassAuthorization On
 
         Alias /thumbnail /home/davdav/thumbnail
     </VirtualHost>

@@ -11,15 +11,7 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon-precomposed" href="/img/icon.png">
     
-    <!--Disable right-click, added by maasaamiichii-->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $(document).bind("contextmenu",function(e){
-                return false;
-            });
-        });
-    </script>
+
      <!-- Select the prev and next pictures by left or right button  -->
     <script>
          $(window).keydown(function(e){
@@ -39,31 +31,31 @@
              }
          });
     </script>​
-    <!--Until Here-->
     
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->   
   </head>
   <body>
     <div id="wrapper">
       <div id="main">
         <a id="back" href="/"></a>
+
         <div class="detail-content">
-          <a href="{{ href }}" target="_blank" onclick="return false"><img src="{{ src }}" class="detail-img"></a>
+          <a href="{{ href }}" target="_blank"><img src="{{ src }}" class="detail-img"></a>
         </div>
         
-        <!--prev and next are added by maasaammiichii-->
         <div>
-            <br>
-            <a id="prev" href="{{ prev_ref }}"></a><a id="next" href="{{ next_ref }}"></a>
-        </div>
-        <!--Until Here-->
-        
+          <br>
+          <a id="prev" href="{{ prev_ref }}"></a><a id="next" href="{{ next_ref }}"></a>
+        </div>        
       </div>
-      <!--Copyright is added by maasaamiichii-->
-      <footer>
-          <p> Copyright &copy;Username All Rights Reserved. &nbsp;|&nbsp; Powered by <a href="https://github.com/xcoo/davdav" target = "_blank">Davdav. Xcoo, Inc.</a>
-          </p>
-      </footer>
-      <!--Until Here-->
+
+      {% if footer_enable %}
+        {% include 'footer.html' %}
+      {% endif %}
     </div>
   </body>
 </html>
