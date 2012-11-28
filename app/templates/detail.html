@@ -10,26 +10,10 @@
 
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon-precomposed" href="/img/icon.png">
-    
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 
     <!--[if lt IE 9]>
       <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->   
-    <!-- Select the prev and next picture by left or right button  -->
-    <script>
-        $(window).keyup(function(e){
-            var KeyID = e.keyCode;
-            switch(KeyID){
-                case 37:
-                    window.location.href = "{{ prev_ref }}";
-                    break;
-                case 39:
-                    window.location.href = "{{ next_ref }}";
-                    break;
-             }
-         });
-    </script>​
   </head>
   <body>
     <div id="wrapper">
@@ -50,5 +34,21 @@
         {% include 'footer.html' %}
       {% endif %}
     </div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+    <!-- Script for moving to the prev/next page by left or right button -->
+    <script>
+      $(window).keyup(function(e) {
+          switch (e.keyCode) {
+          case 37:
+              window.location.href = "{{ prev_ref }}";
+              break;
+          case 39:
+              window.location.href = "{{ next_ref }}";
+              break;
+          }
+      });
+    </script>​
   </body>
 </html>
