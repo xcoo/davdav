@@ -140,11 +140,11 @@ def detail(img_path):
                                           next_ref=next_img_ref,
                                           footer_enable=app.config['FOOTER_ENABLE'])
     
-@app.route('/disable',methods=['POST'])
+@app.route('/disable', methods=['POST'])
 @requires_auth
 def disable():
-    file_path=request.form['file_path']
-    thumbnail_dao.disable_thumbnail(file_path)
+    thumb_id = request.form['thumb-id']
+    thumbnail_dao.disable_thumbnail(thumb_id)
     return redirect('/')
 
 
@@ -191,25 +191,25 @@ def _get_dav_dates(page=0):
                 orig_path = os.path.join(d, f)
 
                 thumbnail = thumbnail_dao.select_by_filepath(orig_path)
-                
-                if thumbnail is None or thumbnail.enable == 0:
-                    continue
-                
-                thumb_path = thumbnail.thumbnail
 
                 try:
                     title = _format_date(base, '%Y%m%d_%H%M%S', '%H:%M')
                 except:
                     continue
 
-                if not thumb_path == None:
-                    src = '%s/%s' % (app.config['THUMB_ROOT_URL'], thumb_path)
+                if thumbnail != None and thumbnail.enable == 0:
+                    continue
+                
+                if thumbnail != None:
+                    src = '%s/%s' % (app.config['THUMB_ROOT_URL'], thumbnail.thumbnail)
+                    thumb_id = thumbnail.id
                 else:
                     src = '/img/nothumbnail.jpg'
+                    thumb_id = -1
 
                 href = '/detail/' + d + '/' + f
                 
-                dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
+                dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_id': thumb_id }
                 dav_imgs.append(dav_img)
 
         dav_date = { 'title': group_title, 'dav_imgs': dav_imgs }
@@ -233,7 +233,6 @@ def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
     return dt.strftime(dst_format)
         
-# Added by maasaamiichii
 def _get_prev_next_img(img_path):
     webdav_dir  = app.config['WEBDAV_DIR']
     num_by_page = app.config['NUM_BY_PAGE']

@@ -32,12 +32,14 @@
                   <div class="thumbnail-title">
                      {{ dav_img.title }}
                      
+                     {% if dav_img.thumb_id != -1 %}
                      <div class="disable-button">
                        <form action="/disable" method="POST">
-                         <input type="hidden" name="file_path" value="{{ dav_img.thumb_path }}" />
+                         <input type="hidden" name="thumb-id" value="{{ dav_img.thumb_id }}" />
                          <input type="submit" id="disable-submit-button" value="" />
                        </form>
                      </div>
+                     {% endif %}
                   </div>
                 </div>
                 {% endfor %}
