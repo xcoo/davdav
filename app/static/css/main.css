@@ -111,6 +111,7 @@ button {
 /* detail.html */
 
 #control {
+  height: 20px;
   margin-bottom: 10px;
 }
 
