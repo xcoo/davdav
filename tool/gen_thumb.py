@@ -124,7 +124,10 @@ def main():
                 base, ext = os.path.splitext(f)
                 if not re.match('^\.(jpe?g|png|gif|bmp)', ext, re.IGNORECASE):
                     continue
-                    
+                   
+                if re.match('^\..*', base, re.IGNORECASE):
+                    continue
+ 
                 rel_src = os.path.join(d, f)
                 rel_dst = os.path.join(d, f)
                 abs_src = os.path.join(webdav_dir, rel_src)
@@ -138,8 +141,12 @@ def main():
                 if not os.path.isdir(intermediate_dir):
                     os.makedirs(intermediate_dir)
 
-                gen_thumb(abs_src, abs_dst)
-                add_thumb_to_db(rel_src, rel_dst)
+                try:
+                    gen_thumb(abs_src, abs_dst)
+                    add_thumb_to_db(rel_src, rel_dst)
+                except:
+                    print '%s: Failed to create thumbnail image' % rel_src
+                    continue
                 
                 print rel_src + ': Generate a new thumbnail image'
 
