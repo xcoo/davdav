@@ -50,7 +50,7 @@ except RuntimeError:
     app.config['AUTH_ENABLE']     = True
     app.config['AUTH_USERNAME']   = 'username'
     app.config['AUTH_PASSWORD']   = 'password'
-    
+
 app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
         '/': os.path.join(os.path.dirname(__file__), 'static')
         })
@@ -128,7 +128,7 @@ def detail(img_path):
     title = _format_date(img_path.split('/')[1].split('.jpg')[0],
                          '%Y%m%d_%H%M%S', '%m/%d %H:%M')
     img_src = '%s/%s' % (app.config['WEBDAV_ROOT_URL'], img_path)
-    
+
     prev_next_img = _get_prev_next_img(img_path)
     prev_img_ref = prev_next_img['prev_img']
     next_img_ref = prev_next_img['next_img']
@@ -139,12 +139,12 @@ def detail(img_path):
                                           prev_ref=prev_img_ref,
                                           next_ref=next_img_ref,
                                           footer_enable=app.config['FOOTER_ENABLE'])
-    
-@app.route('/disable',methods=['POST'])
+
+@app.route('/disable', methods=['POST'])
 @requires_auth
 def disable():
-    file_path=request.form['file_path']
-    thumbnail_dao.disable_thumbnail(file_path)
+    thumb_id = request.form['thumb-id']
+    thumbnail_dao.disable_thumbnail(thumb_id)
     return redirect('/')
 
 
@@ -157,10 +157,10 @@ def _get_dav_dates(page=0):
     dav_dates = []
 
     dirs = os.listdir(webdav_dir)
-    dirs.sort() 
+    dirs.sort()
     dirs.reverse()
-    
-    num = 0 
+
+    num = 0
     for d in dirs:
 
         if not os.path.isdir(os.path.join(webdav_dir, d)):
@@ -187,29 +187,29 @@ def _get_dav_dates(page=0):
                 base, ext = os.path.splitext(f)
                 if not re.match('^\.(jpe?g|png|gif|bmp)', ext, re.IGNORECASE):
                     continue
-                    
+
                 orig_path = os.path.join(d, f)
 
                 thumbnail = thumbnail_dao.select_by_filepath(orig_path)
-                
-                if thumbnail is None or thumbnail.enable == 0:
-                    continue
-                
-                thumb_path = thumbnail.thumbnail
 
                 try:
                     title = _format_date(base, '%Y%m%d_%H%M%S', '%H:%M')
                 except:
                     continue
 
-                if not thumb_path == None:
-                    src = '%s/%s' % (app.config['THUMB_ROOT_URL'], thumb_path)
+                if thumbnail != None and thumbnail.enable == 0:
+                    continue
+
+                if thumbnail != None:
+                    src = '%s/%s' % (app.config['THUMB_ROOT_URL'], thumbnail.thumbnail)
+                    thumb_id = thumbnail.id
                 else:
                     src = '/img/nothumbnail.jpg'
+                    thumb_id = -1
 
                 href = '/detail/' + d + '/' + f
-                
-                dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_path':thumb_path }
+
+                dav_img = { 'title': title, 'src': src, 'href': href, 'thumb_id': thumb_id }
                 dav_imgs.append(dav_img)
 
         dav_date = { 'title': group_title, 'dav_imgs': dav_imgs }
@@ -232,33 +232,33 @@ def _count_pages():
 def _format_date(dt_str, src_format, dst_format):
     dt = datetime.datetime.strptime(dt_str, src_format)
     return dt.strftime(dst_format)
-        
-# Added by maasaamiichii
+
 def _get_prev_next_img(img_path):
     webdav_dir  = app.config['WEBDAV_DIR']
     num_by_page = app.config['NUM_BY_PAGE']
 
     dirs = os.listdir(webdav_dir)
-    dirs.sort() 
+    dirs.sort()
     dirs.reverse()
-    
-    next_find_flag=0
-    prev_find_flag=0
-    tmp_ref=''
-    tmp_path=''
-    prev_img=''
-    next_img=''
+
+    next_find_flag = 0
+    prev_find_flag = 0
+    tmp_ref = ''
+    tmp_path = ''
+    prev_img = ''
+    next_img = ''
+
     for d in dirs:
 
         if not os.path.isdir(os.path.join(webdav_dir, d)):
             continue
-        
-        if prev_find_flag==1:
+
+        if prev_find_flag == 1:
             break
 
         for dt_root, dt_dirs, dt_files in os.walk(os.path.join(webdav_dir, d)):
-        
-            if prev_find_flag==1:
+
+            if prev_find_flag == 1:
                 break
 
             for f in dt_files:
@@ -266,26 +266,26 @@ def _get_prev_next_img(img_path):
                 base, ext = os.path.splitext(f)
                 if not re.match('^\.(jpe?g|png|gif|bmp)', ext, re.IGNORECASE):
                     continue
-                    
+
                 orig_path = os.path.join(d, f)
                 thumbnail = thumbnail_dao.select_by_filepath(orig_path)
                 if thumbnail is None or thumbnail.enable == 0:
                     continue
-                
-                if next_find_flag==1:
+
+                if next_find_flag == 1:
                     next_img = '/detail/' + d + '/' + f
-                    prev_find_flag=1
-                    break 
-                
-                if img_path==orig_path:
+                    prev_find_flag = 1
+                    break
+
+                if img_path == orig_path:
                     prev_img = tmp_ref
-                    next_find_flag=1
-              
-                if next_find_flag==0:
+                    next_find_flag = 1
+
+                if next_find_flag == 0:
                     tmp_ref = '/detail/' + d + '/' + f
                     tmp_path = orig_path
-    
-    prev_next_imgs={'prev_img':prev_img, 'next_img':next_img}
+
+    prev_next_imgs = { 'prev_img': prev_img, 'next_img': next_img }
 
     return prev_next_imgs
 
