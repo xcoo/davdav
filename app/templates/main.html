@@ -22,24 +22,23 @@
           {% for dav_date in dav_dates %}
           <div class="date">
             <div class="date-content">
-       	      <div class="date-title">{{ dav_date.title }}</div>
+              <div class="date-title">{{ dav_date.title }}</div>
               <div class="date-thumbnail">
                 {% for dav_img in dav_date.dav_imgs %}
                 <div class="thumbnail-wrapper">
                   <div class="thumbnail-img" style="background:url({{ dav_img.src }}) no-repeat center;">
                     <a href="{{ dav_img.href }}"></a>
                   </div>
-                  <div class="thumbnail-title">
-                     {{ dav_img.title }}
-                     
-                     {% if dav_img.thumb_id != -1 %}
-                     <div class="disable-button">
-                       <form action="/disable" method="POST">
-                         <input type="hidden" name="thumb-id" value="{{ dav_img.thumb_id }}" />
-                         <input type="submit" id="disable-submit-button" value="" />
-                       </form>
-                     </div>
-                     {% endif %}
+                  <div>
+                    <div class="thumbnail-title">{{ dav_img.title }}</div>
+                    {% if dav_img.thumb_id != -1 %}
+                    <div class="disable-button">
+                      <form action="/disable" method="POST">
+                        <input type="hidden" name="thumb-id" value="{{ dav_img.thumb_id }}" />
+                        <input type="submit" id="disable-submit-button" value="" />
+                      </form>
+                    </div>
+                    {% endif %}
                   </div>
                 </div>
                 {% endfor %}
@@ -55,16 +54,16 @@
         {% if prev_page != None %}
         <a id="prev" href="/?page={{ prev_page }}"></a>
         {% endif %}
-        
+
         {% if next_page != None %}
         <a id="next" href="/?page={{ next_page }}" rel="next"></a>
         {% endif %}
 
         <div class="clear"></div>
       </div>
-      
+
       {% if footer_enable %}
-        {% include 'footer.html' %}
+      {% include 'footer.html' %}
       {% endif %}
     </div>
 
@@ -88,6 +87,6 @@
           }
           }
       });
-    </script>​
+    </script>
   </body>
 </html>
