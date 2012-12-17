@@ -97,7 +97,7 @@ def exist_thumb_in_db(orig_file):
 
 def gen_thumb(src_file, dst_file):
     im = Image.open(src_file)
-    im.thumbnail((256, 256))
+    im.thumbnail((256, 256), Image.ANTIALIAS)
     im.save(dst_file)
 
 def add_thumb_to_db(orig_file, thumb_file):
